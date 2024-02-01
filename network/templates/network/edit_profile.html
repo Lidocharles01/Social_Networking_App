@@ -1,0 +1,129 @@
+{% extends "network/layout2.html" %}
+
+{% load static %}
+
+{% block title %}
+    Edit Profile | Network
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('edit-form');
+        var updateButton = document.getElementById('update-btn');
+        var profileImageInput = document.getElementById('new_profile');
+        var coverImageInput = document.getElementById('new_cover');
+        var profileSelectedImageSpan = document.getElementById('profile-selected-image');
+        var coverSelectedImageSpan = document.getElementById('cover-selected-image');
+
+        // Function to display image name
+        function displayImageName(input, imageNameSpan) {
+            var fileName = input.files[0] ? input.files[0].name : '';
+            imageNameSpan.textContent = 'Selected Image: ' + fileName;
+        }
+
+        // Event listener for profile picture input
+        profileImageInput.addEventListener('change', function() {
+            displayImageName(profileImageInput, profileSelectedImageSpan);
+        });
+
+        // Event listener for cover picture input
+        coverImageInput.addEventListener('change', function() {
+            displayImageName(coverImageInput, coverSelectedImageSpan);
+        });
+
+        form.addEventListener('input', function() {
+            console.log('Input detected. Enabling the button.');
+            updateButton.removeAttribute('disabled');
+        });
+
+        form.addEventListener('submit', function() {
+            console.log('Form submitted.');
+            // You can add additional form validation logic here if needed
+        });
+    });
+</script>
+{% endblock %}
+
+
+
+
+{% block body %}
+    <div class="user-box" style="margin-top: 6vh;">
+        <div>
+            <center>
+                <img src="{% static 'network/Images/logo_icon.png' %}" height="45em" style="margin-bottom: 2vh;">
+                <h3>Edit Profile</h3><br>
+            </center>
+        </div>
+
+        <form action="{% url 'edit_profile' %}" method="post" id="edit-form" style="width: 100%; margin-bottom: 5vh;" enctype="multipart/form-data">
+            {% csrf_token %}
+<!-- For profile picture -->
+<div class="form-group">
+    <label for="bio"> Profile Picture:</label>
+    <div class="custom-file">
+        <input type="file" name="new_profile" class="form-control custom-file-input" id="new_profile" accept="image/jpeg,image/png,image/webp,image/gif" data-focusable="true" aria-describedby="inputGroupFileAddon01">
+        <label class="custom-file-label" for="new_profile"><span style="color: #6c757d;">Choose new profile picture</span></label>
+    </div>
+    <span id="profile-selected-image"></span>
+    <br>
+    <span id="current-profile-image">Current Profile Image: <img src="{{ user.profile_pic.url }}" alt="Current Profile Image" height="50"></span>
+</div>
+
+<!-- For cover picture -->
+<div class="form-group">
+    <label for="bio"> Cover Picture:</label>
+    <div class="custom-file">
+        <input type="file" name="new_cover" class="form-control custom-file-input" id="new_cover" accept="image/jpeg,image/png,image/webp,image/gif" data-focusable="true" aria-describedby="inputGroupFileAddon01">
+        <label class="custom-file-label" for="new_cover"><span style="color: #6c757d;">Choose new cover picture</span></label>
+    </div>
+    <span id="cover-selected-image"></span>
+    <br>
+    <span id="current-cover-image">Current Cover Image: <img src="{{ user.cover.url }}" alt="Current Cover Image" height="50"> {{ user.cover_pic.name }}</span>
+</div>
+<div class="form-group">
+    <label for="bio">Bio:</label>
+    <textarea class="form-control" name="bio" rows="3" placeholder="Enter your bio here">{{ user.bio }}</textarea>
+</div>
+
+            <!-- User's First Name -->
+            <div class="form-group">
+                <label for="bio">First Name:</label>
+                <input class="form-control inp fname" type="text" name="firstname" value="{{ user.first_name }}" autocomplete="off" autofocus>
+                <span class="star small"></span>
+            </div>
+
+            <!-- User's Last Name -->
+            <div class="form-group">
+                <label for="bio">Last Name:</label>
+                <input class="form-control inp lname" type="text" name="lastname" value="{{ user.last_name }}" autocomplete="off">
+                <span class="star small"></span>
+            </div>
+
+            <!-- User's Username -->
+            <div class="form-group">
+                <label for="bio">User Name:</label>
+                <input class="form-control inp usrname" type="text" name="username" value="{{ user.username }}" autocomplete="off">
+                <span class="star small">{{ message }}</span>
+            </div>
+
+            <!-- User's Email Address -->
+            <div class="form-group">
+                <label for="bio">Email:</label>
+                <input class="form-control inp email" type="email" name="email" value="{{ user.email }}" autocomplete="off">
+                <span class="star small"></span>
+            </div>
+
+            <center>
+                <input class="btn btn-primary" type="submit" value="Update Profile" id="update-btn" style="margin-top: 10px; width: 95%;" disabled>
+            </center>
+        </form>
+
+        <div>
+            <center>
+                <a href="{% url 'profile' user.username %}">Back to Profile</a>
+            </center>
+        </div><br><br>
+    </div>
+{% endblock %}
